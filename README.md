@@ -146,8 +146,6 @@ main.cpp
 #include <string>     // String handling
 ```
 
-> No `<map>`, `<set>`, `<algorithm>`, or `<limits>` used.
-
 ---
 
 ## 📝 Assignment Requirements Coverage
@@ -158,7 +156,6 @@ main.cpp
 | Inheritance (Person → Student) | ✅ |
 | Virtual functions | ✅ |
 | At least 2 STL containers | ✅ `vector<Student>` + `vector<string>` |
-| Sorting algorithm | ✅ Bubble Sort |
 | Unique ID validation | ✅ |
 | GPA range validation | ✅ |
 | No duplicate courses | ✅ |
