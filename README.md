@@ -21,13 +21,13 @@ Built as an individual assignment applying **OOP**, **STL**, and core C++ concep
 ## ✨ Features
 
 - Add students with unique ID, name, and GPA
-- Remove students efficiently using swap-with-last `O(1)`
-- Search for a student by ID
+- Remove students by ID
+- Search for a student using `find_if()` (STL algorithm)
 - Display all registered students
-- Enroll a student in a course (no duplicates allowed)
+- Enroll a student in a course — duplicates blocked automatically via `set`
 - View all courses of a specific student
-- Sort students by GPA (descending) without modifying original order
-- Full input validation — program never crashes on bad input
+- Sort students by GPA using `sort()` (STL algorithm)
+- **Bonus:** Count students with GPA ≥ 3.0 using `count_if()` (STL algorithm)
 
 ---
 
@@ -54,34 +54,28 @@ g++ -std=c++17 -o student_system main.cpp
 ## 📌 Menu Options
 
 ```
-=========================================
-   Student Course Management System
-=========================================
-
---- Menu ---
-1. Add Student
-2. Remove Student
-3. Search Student
-4. Display All Students
-5. Enroll Student in Course
-6. Show Student Courses
-7. Sort Students by GPA
-8. Exit
+ Student System
+1.Add  2.Remove  3.Search  4.Display
+5.Enroll  6.Courses  7.Sort  8.Count(GPA>=3)  0.Exit
+Choice:
 ```
 
 ### Example Usage
 
 ```
 Choice: 1
-Enter Student ID: 1001
-Enter Name: Ali
-Enter GPA (0.0 - 4.0): 3.5
-  [+] Student added successfully.
+ID   : 1001
+Name : Ali
+GPA  : 3.5
+Added.
 
 Choice: 5
-Enter Student ID: 1001
-Enter Course Name: Data Structures
-  [+] Enrolled in "Data Structures" successfully.
+ID   : 1001
+Course: Data Structures
+Enrolled.
+
+Choice: 8
+  Students with GPA >= 3.0 : 1
 ```
 
 ---
@@ -91,17 +85,18 @@ Enter Course Name: Data Structures
 ```
 main.cpp
 │
-├── class Person            ← Base class
+├── class Person              ← Base class
 │     └── string name
 │
-├── class Student           ← Derived from Person
+├── class Student             ← Derived from Person
 │     ├── int id
 │     ├── double gpa
-│     └── vector<string> courses
+│     └── set<string> courses
 │
-└── class StudentManager    ← System controller
+└── class StudentSystem       ← System controller
       ├── vector<Student> students
-      └── run() / menu loop
+      ├── map<int,int> index
+      └── menu loop in main()
 ```
 
 ---
@@ -111,10 +106,10 @@ main.cpp
 | Concept | Implementation |
 |---|---|
 | **Inheritance** | `Student` inherits from `Person` via `public` inheritance |
-| **Encapsulation** | All attributes are `private` with getters/setters |
-| **Polymorphism** | `display()` is `virtual` — calls correct version at runtime |
-| **Virtual Destructor** | `~Person()` is `virtual` to prevent memory leaks |
-| **Constructors** | Default + parameterised constructors in both classes |
+| **Encapsulation** | All attributes are `private` with getters |
+| **Polymorphism** | `virtual ~Person()` — correct destructor called at runtime |
+| **Virtual Destructor** | Prevents memory leak when deleting via `Person*` |
+| **Constructor** | `Student(int, string, double)` passes `name` to `Person` |
 
 ---
 
@@ -122,28 +117,34 @@ main.cpp
 
 | Container / Algorithm | Where Used | Purpose |
 |---|---|---|
-| `vector<Student>` | `StudentManager` | Stores all students dynamically |
-| `vector<string>` | `Student::courses` | Stores enrolled courses per student |
-| Bubble Sort (manual) | `sortByGpa()` | Sorts a **copy** — original order preserved |
+| `vector<Student>` | `StudentSystem` | Stores all students in order |
+| `map<int, int>` | `StudentSystem::index` | Maps ID to vector index for O(log n) lookup |
+| `set<string>` | `Student::courses` | No duplicates, auto-sorted |
+| `sort()` | `sortByGpa()` | Sorts students ascending by GPA |
+| `find_if()` | `searchStudent()` | Searches students by ID |
+| `count_if()` | `countHighGpa()` | Counts students with GPA >= 3.0 |
 
 ---
 
 ## 🛡️ Constraints & Validation
 
-- **Unique ID** — duplicate IDs are rejected immediately
-- **GPA range** — must be between `0.0` and `4.0`; re-prompted on invalid input
-- **No duplicate courses** — linear scan blocks re-enrollment in same course
-- **Empty course name** — rejected with an error message
-- **Invalid `cin` input** — buffer flushed with `while(cin.get(c) && c != '\n')` — no crash
+- **Unique ID** — `map::count()` rejects duplicate IDs immediately
+- **GPA range** — `do { } while (v < 0 || v > 4)` re-prompts until valid
+- **No duplicate courses** — `set<string>` blocks duplicates automatically
+- **Not found handling** — clear message shown when ID does not exist
 
 ---
 
 ## 📚 Libraries Used
 
 ```cpp
-#include <iostream>   // Input / Output
-#include <vector>     // STL container
-#include <string>     // String handling
+#include <iostream>    // Input / Output
+#include <vector>      // STL container
+#include <map>         // STL container
+#include <set>         // STL container
+#include <algorithm>   // sort(), find_if(), count_if()
+#include <string>      // String handling
+#include <utility>     // pair / move helpers
 ```
 
 ---
@@ -154,9 +155,10 @@ main.cpp
 |---|---|
 | Classes + Encapsulation | ✅ |
 | Inheritance (Person → Student) | ✅ |
-| Virtual functions | ✅ |
-| At least 2 STL containers | ✅ `vector<Student>` + `vector<string>` |
+| Virtual Destructor | ✅ |
+| At least 2 STL containers | ✅ `vector` + `map` + `set` (3 containers) |
+| STL Algorithms | ✅ `sort()` + `find_if()` + `count_if()` |
 | Unique ID validation | ✅ |
 | GPA range validation | ✅ |
-| No duplicate courses | ✅ |
+| No duplicate courses | ✅ via `set<string>` |
 | Invalid input handling | ✅ |
